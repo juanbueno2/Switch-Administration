@@ -21,6 +21,7 @@ DEFAULT_SHOW_COMMANDS = (
     "show version",
     "show ip interface brief",
     "show interfaces status",
+    "show vlan brief",
 )
 
 
