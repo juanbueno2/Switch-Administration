@@ -1,0 +1,4 @@
+netmiko>=4.4,<5
+python-dotenv>=1.0,<2
+# Paramiko 5 removed SHA-1 KEX algorithms used by some older Cisco IOS SSH servers.
+paramiko>=3.4,<4
