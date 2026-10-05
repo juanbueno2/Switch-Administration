@@ -21,7 +21,7 @@ DEFAULT_SHOW_COMMANDS = (
     "show version",
     "show ip interface brief",
     "show interfaces status",
-    "show vlan brief",
+    "do show vlan brief",
 )
 
 
@@ -76,6 +76,16 @@ def configure_switch(
         print(connection.save_config())
 
 
+def set_port_description(
+    connection_options: dict[str, object], interface: str, description: str
+) -> None:
+    """Set and save a description on one switch interface."""
+    configure_switch(
+        connection_options,
+        [f"interface {interface}", f"description {description}"],
+    )
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Run read-only or configuration commands on a Cisco IOS switch."
@@ -103,6 +113,12 @@ def parse_args() -> argparse.Namespace:
         metavar="COMMAND",
         help="Apply configuration commands and save the configuration.",
     )
+    parser.add_argument(
+        "--set-port-description",
+        nargs=2,
+        metavar=("INTERFACE", "DESCRIPTION"),
+        help="Set an interface description and save the configuration.",
+    )
     return parser.parse_args()
 
 
@@ -110,13 +126,22 @@ def main() -> int:
     load_dotenv()
     args = parse_args()
 
-    if args.show and args.configure:
-        print("Choose either --show or --configure, not both.", file=sys.stderr)
+    selected_actions = sum(
+        action is not None for action in (args.show, args.configure, args.set_port_description)
+    )
+    if selected_actions > 1:
+        print(
+            "Choose only one of --show, --configure, or --set-port-description.",
+            file=sys.stderr,
+        )
         return 2
 
     try:
         connection_options = build_connection_options(args)
-        if args.configure:
+        if args.set_port_description:
+            interface, description = args.set_port_description
+            set_port_description(connection_options, interface, description)
+        elif args.configure:
             configure_switch(connection_options, args.configure)
         else:
             show_commands(connection_options, args.show or DEFAULT_SHOW_COMMANDS)

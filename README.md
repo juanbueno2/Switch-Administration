@@ -52,6 +52,18 @@ Only use `--configure` when you have confirmed the target switch and commands.
 Test changes in a lab first, and ensure your account has the required Cisco
 privileges.
 
+To set a description on one port, use the dedicated option. For example, to
+label port `GigabitEthernet1/0/35` as `Division_5 Not connected`:
+
+```bash
+python app.py --set-port-description \
+  GigabitEthernet1/0/35 \
+  "Division_5 Not connected"
+```
+
+This enters interface configuration mode, applies the description, exits
+configuration mode, and saves the running configuration.
+
 ## Command-line overrides
 
 Environment values can be overridden for one invocation:
